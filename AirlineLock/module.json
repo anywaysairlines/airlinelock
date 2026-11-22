@@ -1,0 +1,18 @@
+{
+    "name": "AirlineLock",
+    "alias": "airline-lock",
+    "description": "Locks all frontend users, profiles, PIREPs, airline selections and home airports to one configured airline and hub.",
+    "keywords": [
+        "airline",
+        "lock",
+        "anyways"
+    ],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\AirlineLock\\Providers\\AirlineLockServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

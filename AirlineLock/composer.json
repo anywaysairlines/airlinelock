@@ -1,0 +1,12 @@
+{
+    "name": "anyways/airline-lock",
+    "description": "phpVMS 7 module that locks all users and PIREPs to a single airline and home airport.",
+    "type": "phpvms-module",
+    "license": "GPL-3.0-only",
+    "autoload": {
+        "psr-4": {
+            "Modules\\AirlineLock\\": "."
+        }
+    },
+    "require": {}
+}
