@@ -6,6 +6,7 @@ use App\Models\Pirep;
 use App\Models\User;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Modules\AirlineLock\Console\SyncAirlineCommand;
 use Modules\AirlineLock\Http\Middleware\ForceAirline;
 use Modules\AirlineLock\Http\Middleware\ForceHomeAirport;
 use Modules\AirlineLock\Http\Middleware\InjectAirlineLockScript;
@@ -38,6 +39,12 @@ class AirlineLockServiceProvider extends ServiceProvider
         $this->registerMiddleware();
         $this->registerViewComposers();
         $this->registerModelEvents();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                SyncAirlineCommand::class,
+            ]);
+        }
     }
 
     protected function registerMiddleware(): void
