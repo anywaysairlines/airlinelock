@@ -17,7 +17,10 @@ Sperrt die Airline **und den Home-Airport** im Frontend. Egal ob Registrierung, 
 ### Variante A: Upload im Adminbereich
 
 1. Im phpVMS-Admin unter **Module** das ZIP `anyways-airline-lock-module.zip` hochladen.
-2. Danach unter **Module** das Modul `AirlineLock` aktivieren.
+2. Danach unter **Module** das Modul `AirlineLock` aktivieren. Falls es dort nicht auftaucht:
+   ```bash
+   php artisan module:enable AirlineLock
+   ```
 3. Cache leeren:
    ```bash
    php artisan optimize:clear
@@ -28,13 +31,45 @@ Ohne SSH: Die Datei `bootstrap/cache/config.php` löschen und die Admin-Seite ne
 ### Variante B: Manuell per FTP/File Manager
 
 1. Den Ordner `AirlineLock` aus dem ZIP nach `phpvms/modules/AirlineLock` hochladen.
-2. Im Admin unter **Module** `AirlineLock` aktivieren.
+2. Modul per Command aktivieren:
+   ```bash
+   php artisan module:list
+   php artisan module:enable AirlineLock
+   ```
 3. Cache leeren:
    ```bash
    php artisan optimize:clear
    ```
 
 Ohne SSH: Die Datei `bootstrap/cache/config.php` löschen und die Admin-Seite neu laden.
+
+## Aktivieren per Command
+
+Wenn du wissen willst, ob das Modul erkannt und aktiv ist:
+
+```bash
+php artisan module:list
+```
+
+Aktivieren:
+
+```bash
+php artisan module:enable AirlineLock
+```
+
+Deaktivieren:
+
+```bash
+php artisan module:disable AirlineLock
+```
+
+Danach jeweils:
+
+```bash
+php artisan optimize:clear
+```
+
+`module:list` zeigt `Enabled` bzw. `Disabled`. Wird `AirlineLock` gar nicht gelistet, liegt der Ordner falsch oder `module.json` fehlt – siehe Troubleshooting.
 
 ## Airline festlegen
 
@@ -108,7 +143,8 @@ Im Admin unter **Module** das Modul `AirlineLock` deaktivieren. Danach sind Airl
 
 ## Troubleshooting
 
-- **Modul taucht im Admin nicht auf:** Der Ordner muss `modules/AirlineLock/module.json` enthalten. Danach `bootstrap/cache/config.php` löschen bzw. `php artisan optimize:clear` ausführen.
+- **Modul taucht im Admin oder bei `module:list` nicht auf:** Der Ordner muss `modules/AirlineLock/module.json` enthalten. Danach `bootstrap/cache/config.php` löschen bzw. `php artisan optimize:clear` ausführen.
+- **Modul ist da, aber Disabled:** `php artisan module:enable AirlineLock` ausführen und danach `php artisan optimize:clear`.
 - **Falsche Airline wird gesperrt:** `ANYWAYS_AIRLINE_ID` oder `ANYWAYS_AIRLINE_ICAO` prüfen, danach `php artisan config:clear` und `php artisan cache:clear`.
 - **Falscher Hub wird gesperrt:** `ANYWAYS_HOME_AIRPORT_ICAO` bzw. `ANYWAYS_HOME_AIRPORT_ID` prüfen. Ohne Konfiguration nimmt das Modul den ersten Airport mit Hub-Flag.
 - **Home-Airport wird nicht gesperrt:** Prüfen, ob ein Hub in **Admin → Airports** markiert ist oder `ANYWAYS_HOME_AIRPORT_ICAO` gesetzt wurde; danach Cache leeren.

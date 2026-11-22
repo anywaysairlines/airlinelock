@@ -27,9 +27,28 @@ Die vollständige Dokumentation steht in [`AirlineLock/README.md`](AirlineLock/R
    php artisan optimize:clear
    ```
 
+### Per Artisan aktivieren
+
+Falls das Modul nach dem Upload oder Kopieren nicht aktiv ist:
+
+```bash
+php artisan module:list
+php artisan module:enable AirlineLock
+php artisan optimize:clear
+```
+
+`module:list` zeigt dir, ob `AirlineLock` als `Enabled` oder `Disabled` geführt wird.
+
 ### Manuell
 
-Den Ordner `AirlineLock` nach `phpvms/modules/AirlineLock` kopieren, im Admin unter **Module** aktivieren und den Cache leeren.
+Den Ordner `AirlineLock` nach `phpvms/modules/AirlineLock` kopieren, dann:
+
+```bash
+php artisan module:enable AirlineLock
+php artisan optimize:clear
+```
+
+Alternativ im Admin unter **Module** aktivieren.
 
 ## Konfiguration
 
