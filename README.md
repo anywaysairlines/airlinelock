@@ -2,34 +2,34 @@
 
 [![Release](https://github.com/anywaysairlines/airlinelock/actions/workflows/release.yml/badge.svg)](https://github.com/anywaysairlines/airlinelock/actions/workflows/release.yml)
 
-phpVMS-7-Modul, das die Airline **und den Heimatflughafen** im Frontend auf eure Werte festnagelt.
+A phpVMS 7 module that locks the airline **and the home airport** in the frontend to your configured values.
 
 ## Features
 
-- Registrierung, Profil, PIREP und Flugsuche verwenden immer dieselbe Airline.
-- Der Home-Airport wird automatisch auf euren Hub gesetzt.
-- Die Dropdowns werden deaktiviert und mit einem Schloss-Hinweis versehen.
-- Serverseitige Durchsetzung: auch manipulierte POSTs oder Query-Strings werden überschrieben.
-- Model-Events auf `User` und `Pirep` als zweite Absicherung.
-- Der Adminbereich bleibt frei: Admins können Airlines, User, Hubs und PIREPs weiterhin verwalten.
-- `airline-lock:sync` stellt bestehende User auf Airline und Hub um.
+- Registration, profile, PIREP and flight search always use the configured airline.
+- The home airport is automatically set to your hub.
+- Airline and airport dropdowns are disabled and show a lock note.
+- Server-side enforcement: manipulated POSTs and query strings are overwritten.
+- Model events on `User` and `Pirep` act as a second line of defence.
+- The admin panel stays free: admins can still manage airlines, users, hubs and PIREPs.
+- `airline-lock:sync` moves existing users to the locked airline and hub.
 
-Die vollständige Dokumentation steht in [`AirlineLock/README.md`](AirlineLock/README.md).
+The full documentation is in [`AirlineLock/README.md`](AirlineLock/README.md).
 
 ## Installation
 
-### Über den Adminbereich
+### Via the admin panel
 
-1. Unter **Module** die ZIP aus dem [Release](https://github.com/anywaysairlines/airlinelock/releases) hochladen.
-2. Modul `AirlineLock` aktivieren.
-3. Cache leeren:
+1. Upload the ZIP from the [releases](https://github.com/anywaysairlines/airlinelock/releases) under **Modules**.
+2. Activate the `AirlineLock` module.
+3. Clear the cache:
    ```bash
    php artisan optimize:clear
    ```
 
-### Per Artisan aktivieren
+### Activate via Artisan
 
-Falls das Modul nach dem Upload oder Kopieren nicht aktiv ist:
+If the module is not active after uploading or copying it:
 
 ```bash
 php artisan module:list
@@ -37,38 +37,38 @@ php artisan module:enable AirlineLock
 php artisan optimize:clear
 ```
 
-`module:list` zeigt dir, ob `AirlineLock` als `Enabled` oder `Disabled` geführt wird.
+`module:list` shows whether `AirlineLock` is `Enabled` or `Disabled`.
 
-### Manuell
+### Manual installation
 
-Den Ordner `AirlineLock` nach `phpvms/modules/AirlineLock` kopieren, dann:
+Copy the `AirlineLock` folder to `phpvms/modules/AirlineLock`, then run:
 
 ```bash
 php artisan module:enable AirlineLock
 php artisan optimize:clear
 ```
 
-Alternativ im Admin unter **Module** aktivieren.
+Alternatively, activate it under **Modules** in the admin panel.
 
-## Konfiguration
+## Configuration
 
-Standardmäßig wird die erste aktive Airline und der erste als Hub markierte Flughafen verwendet. Bei mehreren Airlines/Hubs in der `.env` setzen:
+By default, the first active airline and the first airport flagged as a hub are used. If you have multiple airlines or hubs, set them in `.env`:
 
 ```env
 ANYWAYS_AIRLINE_ICAO=AWY
 ANYWAYS_HOME_AIRPORT_ICAO=EDDF
 ```
 
-Alternativ `ANYWAYS_AIRLINE_ID` und `ANYWAYS_HOME_AIRPORT_ID`.
+You can also use `ANYWAYS_AIRLINE_ID` and `ANYWAYS_HOME_AIRPORT_ID`.
 
-Danach:
+Then run:
 
 ```bash
 php artisan config:clear
 php artisan cache:clear
 ```
 
-Bestehende User umstellen:
+Move existing users to the locked values:
 
 ```bash
 php artisan airline-lock:sync
@@ -76,16 +76,16 @@ php artisan airline-lock:sync
 
 ## Release
 
-Der Workflow [`.github/workflows/release.yml`](.github/workflows/release.yml) baut bei einem Tag `vX.Y.Z` – oder manuell über **Actions → Release** mit einer SemVer-Version – ein installierbares ZIP und hängt es an das GitHub-Release:
+The [`.github/workflows/release.yml`](.github/workflows/release.yml) workflow builds an installable ZIP on a `vX.Y.Z` tag – or manually via **Actions → Release** with a SemVer version – and attaches it to the GitHub release:
 
 ```text
 anyways-airline-lock-module-1.0.0.zip
 anyways-airline-lock-module-1.0.0.zip.sha256
 ```
 
-Das ZIP enthält den Ordner `AirlineLock/` mit `module.json`, `LICENSE` und allen Moduldateien.
+The ZIP contains the `AirlineLock/` folder with `module.json`, `LICENSE` and all module files.
 
-## Entwicklung
+## Development
 
 ```text
 AirlineLock/
@@ -99,6 +99,6 @@ AirlineLock/
 └── Support/
 ```
 
-## Lizenz
+## License
 
-GPL-3.0 – siehe [`LICENSE`](LICENSE).
+GPL-3.0 – see [`LICENSE`](LICENSE).

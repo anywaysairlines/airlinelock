@@ -1,186 +1,186 @@
-# AirlineLock — phpVMS 7 Modul
+# AirlineLock — phpVMS 7 Module
 
-Sperrt die Airline **und den Home-Airport** im Frontend. Egal ob Registrierung, Profil, PIREP, Flugsuche oder ein manipulierter POST: Überall werden die konfigurierte Airline und euer Hub erzwungen.
+Locks the airline **and the home airport** in the frontend. Whether it is registration, profile, PIREP, flight search or a manipulated POST: the configured airline and your hub are enforced everywhere.
 
-## Was das Modul macht
+## What the module does
 
-- **Registrierung:** Es werden nur noch die gesperrte Airline und der Hub angeboten.
-- **Profil:** Airline und Heimatflughafen können nicht mehr gewechselt werden.
-- **PIREP:** Neue und bearbeitete PIREPs gehören immer zur gesperrten Airline.
-- **Flugsuche:** Der Airline-Filter enthält nur noch diese Airline.
-- **Serverseitig:** `ForceAirline` überschreibt `airline_id` bei jedem Frontend-/API-Zugriff, `ForceHomeAirport` setzt `home_airport_id` bei jedem Schreibzugriff. Zusätzlich erzwingen Model-Events auf `User` und `Pirep` die Werte beim Speichern.
-- **Optik:** Airline- und Flughafen-Dropdowns werden per eingeschleustem Script deaktiviert und mit einem Schloss-Hinweis versehen. Das passiert automatisch, es sind keine Theme-Änderungen nötig.
-- **Adminbereich bleibt frei:** Admins können im Admin-Panel weiterhin Airlines, User, Hubs und PIREPs verwalten.
+- **Registration:** only the locked airline and hub are offered.
+- **Profile:** the airline and home airport can no longer be changed.
+- **PIREP:** new and edited PIREPs always belong to the locked airline.
+- **Flight search:** the airline filter only contains the locked airline.
+- **Server-side:** `ForceAirline` overwrites `airline_id` on every frontend/API request, and `ForceHomeAirport` sets `home_airport_id` on every write. Model events on `User` and `Pirep` additionally enforce the values when saving.
+- **Visuals:** airline and airport dropdowns are disabled by an injected script and show a lock note. This happens automatically; no theme changes are required.
+- **Admin panel stays free:** admins can still manage airlines, users, hubs and PIREPs in the admin panel.
 
 ## Installation
 
-### Variante A: Upload im Adminbereich
+### Option A: Upload through the admin panel
 
-1. Im phpVMS-Admin unter **Module** das ZIP `anyways-airline-lock-module.zip` hochladen.
-2. Danach unter **Module** das Modul `AirlineLock` aktivieren. Falls es dort nicht auftaucht:
+1. In the phpVMS admin, upload `anyways-airline-lock-module.zip` under **Modules**.
+2. Activate the `AirlineLock` module under **Modules**. If it does not appear there:
    ```bash
    php artisan module:enable AirlineLock
    ```
-3. Cache leeren:
+3. Clear the cache:
    ```bash
    php artisan optimize:clear
    ```
 
-Ohne SSH: Die Datei `bootstrap/cache/config.php` löschen und die Admin-Seite neu laden.
+Without SSH: delete `bootstrap/cache/config.php` and reload the admin page.
 
-### Variante B: Manuell per FTP/File Manager
+### Option B: Manual upload via FTP/file manager
 
-1. Den Ordner `AirlineLock` aus dem ZIP nach `phpvms/modules/AirlineLock` hochladen.
-2. Modul per Command aktivieren:
+1. Upload the `AirlineLock` folder from the ZIP to `phpvms/modules/AirlineLock`.
+2. Activate the module via command:
    ```bash
    php artisan module:list
    php artisan module:enable AirlineLock
    ```
-3. Cache leeren:
+3. Clear the cache:
    ```bash
    php artisan optimize:clear
    ```
 
-Ohne SSH: Die Datei `bootstrap/cache/config.php` löschen und die Admin-Seite neu laden.
+Without SSH: delete `bootstrap/cache/config.php` and reload the admin page.
 
-## Aktivieren per Command
+## Activate via command
 
-Wenn du wissen willst, ob das Modul erkannt und aktiv ist:
+To check whether the module is detected and active:
 
 ```bash
 php artisan module:list
 ```
 
-Aktivieren:
+Activate it:
 
 ```bash
 php artisan module:enable AirlineLock
 ```
 
-Deaktivieren:
+Deactivate it:
 
 ```bash
 php artisan module:disable AirlineLock
 ```
 
-Danach jeweils:
+After either command, run:
 
 ```bash
 php artisan optimize:clear
 ```
 
-`module:list` zeigt `Enabled` bzw. `Disabled`. Wird `AirlineLock` gar nicht gelistet, liegt der Ordner falsch oder `module.json` fehlt – siehe Troubleshooting.
+`module:list` shows `Enabled` or `Disabled`. If `AirlineLock` is not listed at all, the folder is in the wrong place or `module.json` is missing – see Troubleshooting.
 
-## Airline festlegen
+## Locking the airline
 
-Standardmäßig nimmt das Modul die **erste aktive Airline**. Bei nur einer Airline musst du nichts einstellen.
+By default, the module uses the **first active airline**. If you only have one airline, no configuration is needed.
 
-Bei mehreren Airlines in der `.env` festlegen:
+If you have multiple airlines, configure it in `.env`:
 
 ```env
-# Entweder die ID:
+# Either the ID:
 ANYWAYS_AIRLINE_ID=1
 
-# oder der ICAO-Code:
+# or the ICAO code:
 ANYWAYS_AIRLINE_ICAO=AWY
 ```
 
-Die ID und den ICAO-Code findest du im Admin unter **Airlines**.
+You can find the ID and ICAO code in the admin under **Airlines**.
 
-Nach einer Änderung:
+After a change:
 
 ```bash
 php artisan config:clear
 php artisan cache:clear
 ```
 
-> Wenn `ANYWAYS_AIRLINE_ID` oder `ANYWAYS_AIRLINE_ICAO` gesetzt ist, aber nicht gefunden wird, sperrt das Modul **nicht** auf eine andere Airline. Dann bleibt die Auswahl unverändert, bis die Konfiguration korrekt ist. Das verhindert versehentliches Sperren auf die falsche Airline.
+> If `ANYWAYS_AIRLINE_ID` or `ANYWAYS_AIRLINE_ICAO` is set but cannot be found, the module does **not** lock to a different airline. The selection stays unchanged until the configuration is correct. This prevents accidentally locking to the wrong airline.
 
-## Home-Airport / Hub festlegen
+## Locking the home airport / hub
 
-Standardmäßig nimmt das Modul den **ersten Flughafen, der im Admin als Hub markiert ist**. Bei nur einem Hub musst du nichts einstellen.
+By default, the module uses the **first airport flagged as a hub in the admin**. If you only have one hub, no configuration is needed.
 
-Bei mehreren Hubs oder wenn dein Hub nicht als Hub markiert ist, in der `.env` setzen:
+If you have multiple hubs, or your hub is not flagged as a hub, set it in `.env`:
 
 ```env
-# Die Airport-ID ist normalerweise der ICAO-Code:
+# The airport ID is usually the ICAO code:
 ANYWAYS_HOME_AIRPORT_ICAO=EDDF
 
-# alternativ:
+# or:
 ANYWAYS_HOME_AIRPORT_ID=EDDF
 ```
 
-Den ICAO-Code findest du im Admin unter **Airports**. Der Flughafen muss existieren.
+You can find the ICAO code in the admin under **Airports**. The airport must exist.
 
-Nach einer Änderung:
+After a change:
 
 ```bash
 php artisan config:clear
 php artisan cache:clear
 ```
 
-> Ist ein Airport explizit konfiguriert, aber nicht vorhanden, wird **kein** anderer Airport eingesetzt. Dann bleibt die Auswahl unverändert, bis die Konfiguration stimmt.
+> If an airport is explicitly configured but cannot be found, **no** other airport is used. The selection stays unchanged until the configuration is correct.
 
-## Bestehende User umstellen
+## Updating existing users
 
-Bestehende User werden beim nächsten Login/Speichern automatisch auf die gesperrte Airline und den Hub gesetzt. Für alle User auf einmal:
+Existing users are automatically moved to the locked airline and hub on their next login/save. To update all users at once:
 
 ```bash
 php artisan airline-lock:sync
 ```
 
-Der Befehl setzt Airline **und** Home-Airport. Optional auch alle bestehenden PIREPs umstellen:
+The command sets the airline **and** the home airport. Optionally, update all existing PIREPs as well:
 
 ```bash
 php artisan airline-lock:sync --pireps
 ```
 
-> Achtung: Das nachträgliche Ändern von PIREP-Airlines kann Statistiken und Finanzen beeinflussen. Nur verwenden, wenn das gewünscht ist.
+> Warning: Reassigning PIREP airlines can affect statistics and finances. Only use this if that is what you want.
 
-## Deaktivieren
+## Disabling
 
-Im Admin unter **Module** das Modul `AirlineLock` deaktivieren. Danach sind Airline- und Flughafen-Auswahl wieder normal.
+Deactivate the `AirlineLock` module under **Modules** in the admin panel. Airline and airport selection will then behave normally again.
 
 ## Troubleshooting
 
-- **Modul taucht im Admin oder bei `module:list` nicht auf:** Der Ordner muss `modules/AirlineLock/module.json` enthalten. Danach `bootstrap/cache/config.php` löschen bzw. `php artisan optimize:clear` ausführen.
-- **Modul ist da, aber Disabled:** `php artisan module:enable AirlineLock` ausführen und danach `php artisan optimize:clear`.
-- **Falsche Airline wird gesperrt:** `ANYWAYS_AIRLINE_ID` oder `ANYWAYS_AIRLINE_ICAO` prüfen, danach `php artisan config:clear` und `php artisan cache:clear`.
-- **Falscher Hub wird gesperrt:** `ANYWAYS_HOME_AIRPORT_ICAO` bzw. `ANYWAYS_HOME_AIRPORT_ID` prüfen. Ohne Konfiguration nimmt das Modul den ersten Airport mit Hub-Flag.
-- **Home-Airport wird nicht gesperrt:** Prüfen, ob ein Hub in **Admin → Airports** markiert ist oder `ANYWAYS_HOME_AIRPORT_ICAO` gesetzt wurde; danach Cache leeren.
-- **Dropdowns sind nicht deaktiviert:** Prüfen, ob `ANYWAYS_AIRLINE_LOCK_DISABLE_SELECTS` auf `true` steht und das Modul aktiviert ist. Der Server-Schutz funktioniert auch ohne die optische Sperre.
-- **Bestehende User haben noch eine andere Airline/einen anderen Home-Airport:** `php artisan airline-lock:sync` ausführen.
+- **Module does not appear in the admin panel or in `module:list`:** the folder must contain `modules/AirlineLock/module.json`. Then delete `bootstrap/cache/config.php` or run `php artisan optimize:clear`.
+- **Module is listed but Disabled:** run `php artisan module:enable AirlineLock`, then `php artisan optimize:clear`.
+- **Wrong airline is locked:** check `ANYWAYS_AIRLINE_ID` or `ANYWAYS_AIRLINE_ICAO`, then run `php artisan config:clear` and `php artisan cache:clear`.
+- **Wrong hub is locked:** check `ANYWAYS_HOME_AIRPORT_ICAO` or `ANYWAYS_HOME_AIRPORT_ID`. Without configuration, the module uses the first airport with the hub flag.
+- **Home airport is not locked:** check whether a hub is flagged under **Admin → Airports**, or set `ANYWAYS_HOME_AIRPORT_ICAO`; then clear the cache.
+- **Dropdowns are not disabled:** check that `ANYWAYS_AIRLINE_LOCK_DISABLE_SELECTS` is `true` and the module is active. Server-side enforcement still works without the visual lock.
+- **Existing users still have a different airline or home airport:** run `php artisan airline-lock:sync`.
 
-## Technische Details
+## Technical details
 
-| Datei | Aufgabe |
+| File | Purpose |
 | --- | --- |
-| `Http/Middleware/ForceAirline.php` | Überschreibt `airline_id` bei Frontend-/API-Zugriffen |
-| `Http/Middleware/ForceHomeAirport.php` | Überschreibt `home_airport_id` bei Frontend-/API-Schreibzugriffen |
-| `Http/Middleware/InjectAirlineLockScript.php` | Fügt den Lock-Hinweis in Frontend-HTML ein |
-| `Support/AirlineLock.php` | Ermittelt Airline, Hub und prüft den Kontext |
-| `Providers/AirlineLockServiceProvider.php` | Registriert Middleware, View-Composer, Model-Events und Command |
-| `Console/SyncAirlineCommand.php` | `airline-lock:sync` für bestehende Daten |
-| `Resources/views/script.blade.php` | Deaktiviert Airline-/Flughafen-Selects und zeigt die Hinweise |
+| `Http/Middleware/ForceAirline.php` | Overwrites `airline_id` on frontend/API requests |
+| `Http/Middleware/ForceHomeAirport.php` | Overwrites `home_airport_id` on frontend/API writes |
+| `Http/Middleware/InjectAirlineLockScript.php` | Injects the lock note into frontend HTML |
+| `Support/AirlineLock.php` | Resolves the airline and hub and checks the context |
+| `Providers/AirlineLockServiceProvider.php` | Registers middleware, view composers, model events and the command |
+| `Console/SyncAirlineCommand.php` | `airline-lock:sync` for existing data |
+| `Resources/views/script.blade.php` | Disables airline/airport selects and shows the notes |
 
-## Konfiguration
+## Configuration
 
-| `.env`-Variable | Standard | Bedeutung |
+| `.env` variable | Default | Purpose |
 | --- | --- | --- |
-| `ANYWAYS_AIRLINE_ID` | leer | ID der zu sperrenden Airline |
-| `ANYWAYS_AIRLINE_ICAO` | leer | ICAO der zu sperrenden Airline |
-| `ANYWAYS_HOME_AIRPORT_ICAO` | leer | ICAO des zu sperrenden Hubs |
-| `ANYWAYS_HOME_AIRPORT_ID` | leer | Airport-ID des zu sperrenden Hubs |
-| `ANYWAYS_LOCK_HOME_AIRPORT` | `true` | Home-Airport-Sperre aktivieren |
-| `ANYWAYS_AIRLINE_LOCK_DISABLE_SELECTS` | `true` | Dropdowns optisch deaktivieren |
+| `ANYWAYS_AIRLINE_ID` | empty | ID of the airline to lock |
+| `ANYWAYS_AIRLINE_ICAO` | empty | ICAO of the airline to lock |
+| `ANYWAYS_HOME_AIRPORT_ICAO` | empty | ICAO of the hub to lock |
+| `ANYWAYS_HOME_AIRPORT_ID` | empty | Airport ID of the hub to lock |
+| `ANYWAYS_LOCK_HOME_AIRPORT` | `true` | Enable home airport locking |
+| `ANYWAYS_AIRLINE_LOCK_DISABLE_SELECTS` | `true` | Disable dropdowns visually |
 
-## Voraussetzungen
+## Requirements
 
 - phpVMS 7
-- Modul `AirlineLock` muss im Admin aktiviert sein
-- Bei mehreren Airlines: `ANYWAYS_AIRLINE_ID` oder `ANYWAYS_AIRLINE_ICAO` setzen
-- Bei mehreren Hubs oder keinem Hub-Flag: `ANYWAYS_HOME_AIRPORT_ICAO` bzw. `ANYWAYS_HOME_AIRPORT_ID` setzen
+- The `AirlineLock` module must be enabled in the admin panel
+- For multiple airlines: set `ANYWAYS_AIRLINE_ID` or `ANYWAYS_AIRLINE_ICAO`
+- For multiple hubs or no hub flag: set `ANYWAYS_HOME_AIRPORT_ICAO` or `ANYWAYS_HOME_AIRPORT_ID`
 
-## Lizenz
+## License
 
-GPL-3.0 – siehe `LICENSE`.
+GPL-3.0 – see `LICENSE`.
